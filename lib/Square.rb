@@ -1,4 +1,6 @@
-class Square
+require_relative 'Chess'
+
+class Square < Chess
 	attr_accessor :data, :parent, :children, :piece
 
 	def initialize(data = nil, parent = nil)
@@ -12,24 +14,27 @@ class Square
 		"#{@data} #{@piece}}"
 	end
 
-  def convert_pos(position)
-    letters = %w(a b c d e f g h)
-    convert_letter = letters.find_index(position[0]) + 1
-    [convert_letter, position[1]]
+  def to_uni
+    piece ? @piece.to_uni : "_"
   end
 
-	def has_parent?(coord)
-		parents = []
+  def childrenify(parent_sq)
+    @parent = parent_sq
+    parent_sq.children << self
+  end
+
+  def collect_all_parents
+    parents = []
 		parent = @parent
 		while parent
 			parents << parent
 			parent = parents.last.parent
 		end
+    parents
+  end
 
-		if parents.find {|par| par.data == coord}
-			true
-		else
-			false
-		end
+	def has_parent?(coord)
+		parents = collect_all_parents
+		parents.find {|par| par.data == coord} ? true : false
 	end
 end
